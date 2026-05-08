@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nana's MCA Prep Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0d;
+    --surface: #161616;
+    --card: #1e1e1e;
+    --border: #2a2a2a;
+    --accent: #f0c040;
+    --accent2: #4af0a0;
+    --accent3: #f05a80;
+    --text: #f0f0f0;
+    --muted: #888;
+    --python: #4af0a0;
+    --english: #f0c040;
+    --review: #a78bfa;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    min-height: 100vh;
+    padding: 0 0 60px;
+  }
+
+  /* HEADER */
+  .hero {
+    background: linear-gradient(135deg, #0d0d0d 0%, #1a1200 50%, #0d0d0d 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 40px 24px 32px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -60px; left: 50%; transform: translateX(-50%);
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(240,192,64,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-label {
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(28px, 6vw, 52px);
+    font-weight: 800;
+    line-height: 1.1;
+    color: var(--text);
+  }
+  .hero h1 span { color: var(--accent); }
+  .hero p {
+    margin-top: 12px;
+    color: var(--muted);
+    font-size: 13px;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* PROGRESS OVERVIEW */
+  .overview {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    padding: 24px 16px 0;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+  .stat-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 12px;
+    text-align: center;
+  }
+  .stat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--accent);
+  }
+  .stat-label {
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  /* PROGRESS BAR */
+  .progress-section {
+    max-width: 700px;
+    margin: 20px auto 0;
+    padding: 0 16px;
+  }
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .progress-bar {
+    height: 6px;
+    background: var(--border);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 99px;
+    transition: width 0.5s ease;
+  }
+
+  /* LEGEND */
+  .legend {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    padding: 20px 16px 0;
+    flex-wrap: wrap;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .legend-dot {
+    width: 10px; height: 10px;
+    border-radius: 3px;
+  }
+
+  /* MONTH SECTION */
+  .month-section {
+    max-width: 700px;
+    margin: 28px auto 0;
+    padding: 0 16px;
+  }
+  .month-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .month-badge {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    background: var(--accent);
+    color: #000;
+    padding: 4px 10px;
+    border-radius: 4px;
+  }
+  .month-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  /* WEEK CARD */
+  .week-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    margin-bottom: 14px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .week-card:hover { border-color: #444; }
+  .week-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .week-title-group { display: flex; align-items: center; gap: 10px; }
+  .week-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .week-name { font-size: 13px; color: var(--text); }
+  .week-progress {
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .week-toggle {
+    font-size: 16px;
+    color: var(--muted);
+    transition: transform 0.3s;
+  }
+  .week-card.open .week-toggle { transform: rotate(180deg); }
+
+  .week-body {
+    display: none;
+    padding: 0 18px 16px;
+    border-top: 1px solid var(--border);
+  }
+  .week-card.open .week-body { display: block; }
+
+  /* TASKS */
+  .task-group { margin-top: 14px; }
+  .task-group-label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    display: inline-block;
+  }
+  .label-python { color: var(--python); background: rgba(74,240,160,0.08); }
+  .label-english { color: var(--english); background: rgba(240,192,64,0.08); }
+  .label-review { color: var(--review); background: rgba(167,139,250,0.08); }
+
+  .task-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    cursor: pointer;
+  }
+  .task-item:last-child { border-bottom: none; }
+  .task-check {
+    width: 18px; height: 18px;
+    border: 1.5px solid var(--border);
+    border-radius: 4px;
+    flex-shrink: 0;
+    margin-top: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    font-size: 11px;
+  }
+  .task-item.done .task-check {
+    background: var(--accent2);
+    border-color: var(--accent2);
+    color: #000;
+  }
+  .task-text {
+    font-size: 12px;
+    color: var(--text);
+    line-height: 1.5;
+    flex: 1;
+  }
+  .task-item.done .task-text {
+    color: var(--muted);
+    text-decoration: line-through;
+  }
+
+  /* DAILY HABIT STRIP */
+  .daily-section {
+    max-width: 700px;
+    margin: 28px auto 0;
+    padding: 0 16px;
+  }
+  .daily-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 14px;
+  }
+  .daily-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .daily-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px;
+  }
+  .daily-card-title {
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .habit-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 0;
+    cursor: pointer;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .habit-row:last-child { border-bottom: none; }
+  .habit-check {
+    width: 16px; height: 16px;
+    border: 1.5px solid var(--border);
+    border-radius: 3px;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px;
+    transition: all 0.2s;
+  }
+  .habit-row.done .habit-check {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #000;
+  }
+  .habit-text { font-size: 11px; color: var(--text); }
+  .habit-row.done .habit-text { color: var(--muted); text-decoration: line-through; }
+
+  /* MOTIVATIONAL FOOTER */
+  .footer-quote {
+    max-width: 700px;
+    margin: 32px auto 0;
+    padding: 0 16px;
+    text-align: center;
+  }
+  .quote-box {
+    background: linear-gradient(135deg, rgba(240,192,64,0.06), rgba(74,240,160,0.06));
+    border: 1px solid rgba(240,192,64,0.2);
+    border-radius: 14px;
+    padding: 24px;
+  }
+  .quote-text {
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--accent);
+    line-height: 1.6;
+  }
+  .quote-sub {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 8px;
+  }
+
+  /* RESET BTN */
+  .reset-btn {
+    display: block;
+    margin: 20px auto 0;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    padding: 8px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: all 0.2s;
+  }
+  .reset-btn:hover { border-color: var(--accent3); color: var(--accent3); }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-label">📍 Dhule → MCA → Future</div>
+  <h1>Nana's <span>2-Month</span><br>Prep Tracker</h1>
+  <p>Python · English · Mindset — 3 hours daily, every day counts.</p>
+</div>
+
+<div class="overview">
+  <div class="stat-card">
+    <div class="stat-num" id="totalDone">0</div>
+    <div class="stat-label">Tasks Done</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-num" id="totalTasks">0</div>
+    <div class="stat-label">Total Tasks</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-num" id="pctDone">0%</div>
+    <div class="stat-label">Progress</div>
+  </div>
+</div>
+
+<div class="progress-section">
+  <div class="progress-label">
+    <span>Overall Progress</span>
+    <span id="progressLabel">0 / 0</span>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+</div>
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:var(--python)"></div> Python / Coding</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--english)"></div> English</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--review)"></div> Review / Mindset</div>
+</div>
+
+<!-- MONTH 1 -->
+<div class="month-section">
+  <div class="month-header">
+    <div class="month-badge">Month 1</div>
+    <div class="month-title">Build the Foundation</div>
+  </div>
+
+  <!-- Week 1 -->
+  <div class="week-card open" id="week1">
+    <div class="week-header" onclick="toggleWeek('week1')">
+      <div class="week-title-group">
+        <span class="week-num">WEEK 1</span>
+        <span class="week-name">Python Basics — Variables & Logic</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span class="week-progress" id="week1-prog"></span>
+        <span class="week-toggle">▼</span>
+      </div>
+    </div>
+    <div class="week-body">
+      <div class="task-group">
+        <div class="task-group-label label-python">🐍 Python</div>
+        <div class="task-item" onclick="toggleTask(this)"><div class="task-check">✓</div><div class="task-text">Install Python + VS Code on your laptop</div></div>
+        <div class="task-item" onclick="toggleTask(this)"><div class="task-check">✓</div><div class="task-text">Watch Mosh Python Beginner video — Day 1 (Variables, print, input)</div></div>
+        <div class="task-item" onclick="toggleTask(this)"><div class="task-check">✓</div><div class="task-text">Type and run every code example yourself — don't just watch</div></div>
+        <div class="task-item" onclick="toggleTask(this)"><div class="task-check">✓</div><div class="task-text">Learn if/else conditions — write a simple age checker program</div></div>
+        <div class="task-item" onclick="toggleTask(this)"><div class="task-check">✓</div><div class="task-text">Learn for loops — print numbers 1–10, then only even numbers</div></div>
+        <div class="task-item" onclick="toggleTask(this)"><div class="task-check">✓</div><div class="task-text">Learn while loops — build a simple number guessing game</div></div>
+        <div class="task-item" onclick="toggleTask(this)"><div class="task-check">✓</div><div class="task-text">Weekend challenge: Write a program that takes your name and prints it 5 times</div></div>
+      </div>
+      <div class="task-group">
+        <div class="task-group-label label-english">🗣️ English</div>
+        <div class="task-item" onclick="toggleTask(this)"><div class="task-check">✓</div><div class="task-text">Open BBC Learning English — read 1 article aloud daily (10 mins)</div></div>
+        <div class="task-item" onclick="toggleTask(this)"><div class="task-check">✓</div><div class="task-text">Watch Fireship YouTube — 1 short video with subtitles daily</div></div>
+        <div class="task-item" onclick="toggleTask(this)"><div class="task-check">✓</div><div class="task-text">Write 5 English sentences every evening — what you learned today</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Week 2 -->
+  <div class="week-card" id="week2">
+    <div class="week-header" onclick="toggleWeek('week2')">
+      <div class="week-title-group">
+        <span class="week-num">WEEK 2</span>
+        <span class="week-name">Functions, Lists & Dictionaries</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span class="week-progress" id="week2-prog"></span>
+        <span class="week-toggle">▼</span>
+      </div>
+    </div>
+    <div class="week-body">
+      <div class="task-group">
+        <div class="task-group-label label-python">🐍 Python</div>
+        <div class="task-item" onclick="toggleTask(this)"><div class="task-check">✓</div><div class="task-text">Learn functions — write a function that calculates simple interest</div></div>
+        <div class="task-item" onclick="toggleTask(this)"><div class="task-check">✓</div><div class="task-text">Learn lists — store 5 student names, print them one by one</div></div>
+        <div class="task-item" onclick="toggleTask(this)"><div class="task-check">✓</div><div class="task-text">Learn list methods — append, remove, sort, len()</div></div>
+        <div class="task-item" onclick="toggleTask(this)"><div class="task-check">✓</div><div class="task-text">Learn dictionaries — store name, age, city of 3 students</div></div>
+        <div class="task-item" onclick="toggleTask(this)"><div class="task-check">✓</div><div class="task-text">Combine: Write a student marks calculator using functions + lists</div></div>
+        <div class="task-item" onclick="toggleTask(this)"><div class="task-check">✓</div><div class="task-text">Solve 2 easy problems on HackerRank (Python section)</div></div>
+        <div class="task-item" onclick="toggleTask(this)"><div class="task-check">✓</div><div class="task-text">Weekend: Revisit Week 1 code — can you explain each line?</div></div>
+      </div>
+      <div class="task-group">
+        <div class="task-group-label label-english">🗣️ English</div>
+        <div class="task-item" onclick="toggleTask(this)"><div class="task-check">✓</div><div class="task-text">Practice self-introduction in English — say it aloud 3 times daily</div></div>
+        <div class="task-item" onclick="toggleTask(this)"><div class="task-check">✓</div><div class="task-text">Ask Claude to have a 5-min English conversation with you — about tech</div></div>
+        <div class="task-item" onclick="toggleTask(this)"><div class="task-check">✓</div><div class="task-text">Continue daily 5-sentence English writing habit</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Week 3 -->
+  <div class="week-card" id="week3">
+    <div class="week-header" onclick="toggleWeek('week3')">
+      <div class="week-title-group">
+        <span class="week-num">WEEK 3</span>
+        <span class="week-name">Practice Mode — HackerRank + Problem Solving</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span class="week-progress" id="week3-prog"></span>
+        <span class="week-toggle">▼</span>
+      </div>
+    </div>
+    <div class="week-body">
+      <div class="task-group">
+        <div class="task-group-label label-python">🐍 Python</div>
+        <div class="task-item" onclick="toggleTask(this)"><div class="task-check">✓</div><div class="task-text">Solve 2 HackerRank Python problems every day (Easy level only)</div></div>
+        <div class="task-item" onclick="toggleTask(this)"><div class="task-check">✓</div><div class="task-text">Learn string methods — upper(), lower(), split(), replace()</div></div>
+        <div class="task-item" onclick="toggleTask(this)"><div class="task-check">✓</div><div class="task-text">Learn file handling — read and write a .txt file with Python</div></div>
+        <div class="task-item" onclick="toggleTask(this)"><div class="task-check">✓</div><div class="task-text">Build: Simple ATM program (deposit, withdraw, check balance)</div></div>
+        <div class="task-item" onclick="toggleTask(this)"><div class="task-check">✓</div><div class="task-text">Learn try/except — handle divide by zero and invalid input errors</div></div>
+        <div class="task-item" onclick="toggleTask(this)"><div class="task-check">✓</div><div class="task-text">Google every error you get — practice reading error messages</div></div>
+      </div>
+      <div class="task-group">
+        <div class="task-group-label label-english">🗣️ English</div>
+        <div class="task-item" onclick="toggleTask(this)"><div class="task-check">✓</div><div class="task-text">Watch 1 TED Talk (15 min) — pause and repeat 3 sentences you liked</div></div>
+        <div class="task-item" onclick="toggleTask(this)"><div class="task-check">✓</div><div class="task-text">Write a 5-sentence paragraph: "Why I chose MCA" — in English</div></div>
+        <div class="task-item" onclick="toggleTask(this)"><div class="task-check">✓</div><div class="task-text">Record yourself speaking for 1 minute — replay and notice your pace</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Week 4 -->
+  <div class="week-card" id="week4">
+    <div class="week-header" onclick="toggleWeek('week4')">
+      <div class="week-title-group">
+        <span class="week-num">WEEK 4</span>
+        <span class="week-name">Month 1 Consolidation + Mini Review</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span class="week-progress" id="week4-prog"></span>
+        <span class="week-toggle">▼</span>
+      </div>
+    </div>
+    <div class="week-body">
+      <div class="task-group">
+        <div class="task-group-label label-python">🐍 Python</div>
+        <div class="task-item" onclick="toggleTask(this)"><div class="task-check">✓</div><div class="task-text">Revisit all Week 1–3 code without looking at notes — can you rewrite it?</div></div>
+        <div class="task-item" onclick="toggleTask(this)"><div class="task-check">✓</div><div class="task-text">Build a "Student Report Card" program — input name, 3 marks, output grade</div></div>
+        <div class="task-item" onclick="toggleTask(this)"><div class="task-check">✓</div><div class="task-text">Solve 10 total HackerRank problems this week</div></div>
+        <div class="task-item" onclick="toggleTask(this)"><div class="task-check">✓</div><div class="task-text">Upload your best program to GitHub (create free account if not done)</div></div>
+      </div>
+      <div class="task-group">
+        <div class="task-group-label label-english">🗣️ English</div>
+        <div class="task-item" onclick="toggleTask(this)"><div class="task-check">✓</div><div class="task-text">Give a 2-minute spoken self introduction — record and replay</div></div>
+        <div class="task-item" onclick="toggleTask(this)"><div class="task-check">✓</div><div class="task-text">Write email to a friend in English telling them about your learning journey</div></div>
+      </div>
+      <div class="task-group">
+        <div class="task-group-label label-review">🧠 Review</div>
+        <div class="task-item" onclick="toggleTask(this)"><div class="task-check">✓</div><div class="task-text">Write down: What did I learn in Month 1? What was hardest? What am I proud of?</div></div>
+        <div class="task-item" onclick="toggleTask(this)"><div class="task-check">✓</div><div class="task-text">Rest 1 day — fully. No guilt. You earned it.</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MONTH 2 -->
+<div class="month-section">
+  <div class="month-header">
+    <div class="month-badge" style="background:var(--accent2);color:#000">Month 2</div>
+    <div class="month-title">Build Something Real</div>
+  </div>
+
+  <!-- Week 5 -->
+  <div class="week-card" id="week5">
+    <div class="week-header" onclick="toggleWeek('week5')">
+      <div class="week-title-group">
+        <span class="week-num">WEEK 5</span>
+        <span class="week-name">First Real Project — Console Calculator</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span class="week-progress" id="week5-prog"></span>
+        <span class="week-toggle">▼</span>
+      </div>
+    </div>
+    <div class="week-body">
+      <div class="task-group">
+        <div class="task-group-label label-python">🐍 Python Project</div>
+        <div class="task-item" onclick="toggleTask(this)"><div class="task-check">✓</div><div class="task-text">Plan the calculator on paper first — what features will it have?</div></div>
+        <div class="task-item" onclick="toggleTask(this)"><div class="task-check">✓</div><div class="task-text">Build: Calculator with +, -, *, / and error handling for divide by zero</div></div>
+        <div class="task-item" onclick="toggleTask(this)"><div class="task-check">✓</div><div class="task-text">Add: Loop so user can calculate again without restarting program</div></div>
+        <div class="task-item" onclick="toggleTask(this)"><div class="task-check">✓</div><div class="task-text">Add: History feature — store last 5 calculations in a list</div></div>
+        <div class="task-item" onclick="toggleTask(this)"><div class="task-check">✓</div><div class="task-text">Test it thoroughly — try to break it with wrong inputs</div></div>
+        <div class="task-item" onclick="toggleTask(this)"><div class="task-check">✓</div><div class="task-text">Push to GitHub with a README explaining what the project does</div></div>
+      </div>
+      <div class="task-group">
+        <div class="task-group-label label-english">🗣️ English</div>
+        <div class="task-item" onclick="toggleTask(this)"><div class="task-check">✓</div><div class="task-text">Explain your calculator project in English — to a friend or to Claude</div></div>
+        <div class="task-item" onclick="toggleTask(this)"><div class="task-check">✓</div><div class="task-text">Learn 5 tech interview English phrases: "I built...", "The challenge was...", "I solved it by..."</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Week 6 -->
+  <div class="week-card" id="week6">
+    <div class="week-header" onclick="toggleWeek('week6')">
+      <div class="week-title-group">
+        <span class="week-num">WEEK 6</span>
+        <span class="week-name">Second Project — To-Do List App</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span class="week-progress" id="week6-prog"></span>
+        <span class="week-toggle">▼</span>
+      </div>
+    </div>
+    <div class="week-body">
+      <div class="task-group">
+        <div class="task-group-label label-python">🐍 Python Project</div>
+        <div class="task-item" onclick="toggleTask(this)"><div class="task-check">✓</div><div class="task-text">Build: To-do list — add task, view all tasks, mark as done, delete task</div></div>
+        <div class="task-item" onclick="toggleTask(this)"><div class="task-check">✓</div><div class="task-text">Save tasks to a .txt file so they persist after program closes</div></div>
+        <div class="task-item" onclick="toggleTask(this)"><div class="task-check">✓</div><div class="task-text">Add a priority system — High, Medium, Low for each task</div></div>
+        <div class="task-item" onclick="toggleTask(this)"><div class="task-check">✓</div><div class="task-text">Continue solving 2 HackerRank problems per day</div></div>
+        <div class="task-item" onclick="toggleTask(this)"><div class="task-check">✓</div><div class="task-text">Push final version to GitHub</div></div>
+      </div>
+      <div class="task-group">
+        <div class="task-group-label label-english">🗣️ English</div>
+        <div class="task-item" onclick="toggleTask(this)"><div class="task-check">✓</div><div class="task-text">Watch 2nd TED Talk — write 3 things you understood from it</div></div>
+        <div class="task-item" onclick="toggleTask(this)"><div class="task-check">✓</div><div class="task-text">Have a 10-minute English conversation with Claude about technology</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Week 7 -->
+  <div class="week-card" id="week7">
+    <div class="week-header" onclick="toggleWeek('week7')">
+      <div class="week-title-group">
+        <span class="week-num">WEEK 7</span>
+        <span class="week-name">HTML + CSS Basics — Make It Visual</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span class="week-progress" id="week7-prog"></span>
+        <span class="week-toggle">▼</span>
+      </div>
+    </div>
+    <div class="week-body">
+      <div class="task-group">
+        <div class="task-group-label label-python">💻 Web Basics</div>
+        <div class="task-item" onclick="toggleTask(this)"><div class="task-check">✓</div><div class="task-text">Learn HTML basics — headings, paragraphs, links, images, lists (1 day)</div></div>
+        <div class="task-item" onclick="toggleTask(this)"><div class="task-check">✓</div><div class="task-text">Learn CSS basics — colors, fonts, padding, margin, background (1 day)</div></div>
+        <div class="task-item" onclick="toggleTask(this)"><div class="task-check">✓</div><div class="task-text">Build: A simple personal portfolio page — your name, about, skills</div></div>
+        <div class="task-item" onclick="toggleTask(this)"><div class="task-check">✓</div><div class="task-text">Add your 2 Python projects to the portfolio page as descriptions</div></div>
+        <div class="task-item" onclick="toggleTask(this)"><div class="task-check">✓</div><div class="task-text">Goal is NOT perfection — goal is something you can show someone</div></div>
+      </div>
+      <div class="task-group">
+        <div class="task-group-label label-english">🗣️ English</div>
+        <div class="task-item" onclick="toggleTask(this)"><div class="task-check">✓</div><div class="task-text">Write your portfolio "About Me" section in English — 4–5 sentences</div></div>
+        <div class="task-item" onclick="toggleTask(this)"><div class="task-check">✓</div><div class="task-text">Practice explaining your portfolio out loud in English</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Week 8 -->
+  <div class="week-card" id="week8">
+    <div class="week-header" onclick="toggleWeek('week8')">
+      <div class="week-title-group">
+        <span class="week-num">WEEK 8</span>
+        <span class="week-name">Final Week — Polish, Reflect, Prepare</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span class="week-progress" id="week8-prog"></span>
+        <span class="week-toggle">▼</span>
+      </div>
+    </div>
+    <div class="week-body">
+      <div class="task-group">
+        <div class="task-group-label label-python">🐍 Final Polish</div>
+        <div class="task-item" onclick="toggleTask(this)"><div class="task-check">✓</div><div class="task-text">Clean up all your GitHub projects — proper README for each</div></div>
+        <div class="task-item" onclick="toggleTask(this)"><div class="task-check">✓</div><div class="task-text">Research: What is DSA? Make a list of topics to learn in MCA Sem 1</div></div>
+        <div class="task-item" onclick="toggleTask(this)"><div class="task-check">✓</div><div class="task-text">Build one more small project of YOUR OWN IDEA — anything that solves a small problem</div></div>
+        <div class="task-item" onclick="toggleTask(this)"><div class="task-check">✓</div><div class="task-text">Explore Python libraries: what is pandas, numpy, flask? (just read about them)</div></div>
+      </div>
+      <div class="task-group">
+        <div class="task-group-label label-english">🗣️ English</div>
+        <div class="task-item" onclick="toggleTask(this)"><div class="task-check">✓</div><div class="task-text">Give a full 3-minute self-introduction in English — record it</div></div>
+        <div class="task-item" onclick="toggleTask(this)"><div class="task-check">✓</div><div class="task-text">Compare your Week 1 recording vs Week 8 recording — notice the growth</div></div>
+      </div>
+      <div class="task-group">
+        <div class="task-group-label label-review">🧠 Reflection</div>
+        <div class="task-item" onclick="toggleTask(this)"><div class="task-check">✓</div><div class="task-text">Write your 2-month journey summary — what changed about you?</div></div>
+        <div class="task-item" onclick="toggleTask(this)"><div class="task-check">✓</div><div class="task-text">Set 3 goals for MCA Semester 1 — write them down and keep them visible</div></div>
+        <div class="task-item" onclick="toggleTask(this)"><div class="task-check">✓</div><div class="task-text">Celebrate — you did 2 months of consistent work. That's rare. Be proud.</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DAILY HABITS -->
+<div class="daily-section">
+  <div class="daily-title">⚡ Daily Habits (Check off each day)</div>
+  <div class="daily-grid">
+    <div class="daily-card">
+      <div class="daily-card-title" style="color:var(--python)">🐍 Coding</div>
+      <div class="habit-row" onclick="toggleHabit(this)"><div class="habit-check">✓</div><div class="habit-text">1.5 hrs Python / project work</div></div>
+      <div class="habit-row" onclick="toggleHabit(this)"><div class="habit-check">✓</div><div class="habit-text">Type code, don't just copy-paste</div></div>
+      <div class="habit-row" onclick="toggleHabit(this)"><div class="habit-check">✓</div><div class="habit-text">Google every error before asking for help</div></div>
+    </div>
+    <div class="daily-card">
+      <div class="daily-card-title" style="color:var(--english)">🗣️ English</div>
+      <div class="habit-row" onclick="toggleHabit(this)"><div class="habit-check">✓</div><div class="habit-text">Read aloud 10 mins (BBC/articles)</div></div>
+      <div class="habit-row" onclick="toggleHabit(this)"><div class="habit-check">✓</div><div class="habit-text">Write 5 English sentences</div></div>
+      <div class="habit-row" onclick="toggleHabit(this)"><div class="habit-check">✓</div><div class="habit-text">Watch 1 English video with subtitles</div></div>
+    </div>
+    <div class="daily-card">
+      <div class="daily-card-title" style="color:var(--review)">🧠 Mindset</div>
+      <div class="habit-row" onclick="toggleHabit(this)"><div class="habit-check">✓</div><div class="habit-text">No 2 skip days in a row — ever</div></div>
+      <div class="habit-row" onclick="toggleHabit(this)"><div class="habit-check">✓</div><div class="habit-text">Confusion = progress, not failure</div></div>
+      <div class="habit-row" onclick="toggleHabit(this)"><div class="habit-check">✓</div><div class="habit-text">Compare only with yesterday's Nana</div></div>
+    </div>
+    <div class="daily-card">
+      <div class="daily-card-title" style="color:var(--accent3)">🏃 Body</div>
+      <div class="habit-row" onclick="toggleHabit(this)"><div class="habit-check">✓</div><div class="habit-text">20 min bodyweight workout or walk</div></div>
+      <div class="habit-row" onclick="toggleHabit(this)"><div class="habit-check">✓</div><div class="habit-text">Away from screen for 10 mins every hour</div></div>
+      <div class="habit-row" onclick="toggleHabit(this)"><div class="habit-check">✓</div><div class="habit-text">Sleep by midnight — brain needs rest</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- QUOTE -->
+<div class="footer-quote">
+  <div class="quote-box">
+    <div class="quote-text">"Every senior developer was once someone who knew nothing about coding. The only difference — they didn't stop."</div>
+    <div class="quote-sub">— Your 2-month plan starts today. Dhule → MCA → Future 🚀</div>
+  </div>
+</div>
+
+<button class="reset-btn" onclick="resetAll()">↺ Reset All Progress</button>
+
+<script>
+  const STORAGE_KEY = 'nana_mca_tracker_v1';
+
+  function saveState() {
+    const tasks = [];
+    document.querySelectorAll('.task-item').forEach((el, i) => {
+      tasks.push(el.classList.contains('done'));
+    });
+    const habits = [];
+    document.querySelectorAll('.habit-row').forEach((el, i) => {
+      habits.push(el.classList.contains('done'));
+    });
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ tasks, habits }));
+  }
+
+  function loadState() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return;
+      const { tasks, habits } = JSON.parse(raw);
+      document.querySelectorAll('.task-item').forEach((el, i) => {
+        if (tasks[i]) el.classList.add('done');
+      });
+      document.querySelectorAll('.habit-row').forEach((el, i) => {
+        if (habits[i]) el.classList.add('done');
+      });
+    } catch(e) {}
+  }
+
+  function toggleTask(el) {
+    el.classList.toggle('done');
+    updateStats();
+    saveState();
+  }
+
+  function toggleHabit(el) {
+    el.classList.toggle('done');
+    saveState();
+  }
+
+  function toggleWeek(id) {
+    document.getElementById(id).classList.toggle('open');
+  }
+
+  function updateStats() {
+    const allTasks = document.querySelectorAll('.task-item');
+    const doneTasks = document.querySelectorAll('.task-item.done');
+    const total = allTasks.length;
+    const done = doneTasks.length;
+    const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+
+    document.getElementById('totalDone').textContent = done;
+    document.getElementById('totalTasks').textContent = total;
+    document.getElementById('pctDone').textContent = pct + '%';
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressLabel').textContent = done + ' / ' + total;
+
+    // Per-week progress
+    ['week1','week2','week3','week4','week5','week6','week7','week8'].forEach(wid => {
+      const wCard = document.getElementById(wid);
+      if (!wCard) return;
+      const wAll = wCard.querySelectorAll('.task-item');
+      const wDone = wCard.querySelectorAll('.task-item.done');
+      const el = document.getElementById(wid + '-prog');
+      if (el) el.textContent = wDone.length + '/' + wAll.length;
+    });
+  }
+
+  function resetAll() {
+    if (!confirm('Reset all progress? This cannot be undone.')) return;
+    document.querySelectorAll('.task-item.done, .habit-row.done').forEach(el => el.classList.remove('done'));
+    localStorage.removeItem(STORAGE_KEY);
+    updateStats();
+  }
+
+  loadState();
+  updateStats();
+</script>
+</body>
+</html>
